@@ -3,6 +3,7 @@ name = "rpi-video-rs"
 version = "0.0.1"
 authors = ["Steven Gu"]
 edition = "2018"
+exclude = ["tools/*"]
 
 [dependencies]
 rpi-mmal-rs = { path = "../rpi-mmal-rs" }
