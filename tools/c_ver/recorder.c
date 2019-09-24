@@ -66,6 +66,7 @@ main()
         MMAL_PORT_T* encoder_input_port = NULL;
         MMAL_STATUS_T status = MMAL_SUCCESS;
         int encoder_queue_len = 0;
+        int i =0;
 
         if (create_camera_component(&state))
         {
@@ -106,7 +107,7 @@ main()
         }
 
         encoder_queue_len = mmal_queue_length(state.encoder_pool->queue);
-        for (int i = 0; i < encoder_queue_len; ++i)
+        for (i = 0; i < encoder_queue_len; ++i)
         {
             MMAL_BUFFER_HEADER_T* buffer = mmal_queue_get(state.encoder_pool->queue);
             assert(buffer);
@@ -435,7 +436,7 @@ set_default_state(VideoState* state)
    state->max_seconds = 5;
 
    memset(state->file_path, 0, file_path_len);
-   snprintf(state->file_path, file_path_len, "%d.h264", time(NULL));
+   snprintf(state->file_path, file_path_len, "%d.h264", (int) time(NULL));
 }
 
 int
