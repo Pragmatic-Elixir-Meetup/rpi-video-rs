@@ -5,7 +5,7 @@ use std::fmt;
 
 #[derive(Debug)]
 pub struct VideoError {
-    message: String,
+    pub message: String,
     mmal_status: mmal::MMAL_STATUS_T::Type,
 }
 

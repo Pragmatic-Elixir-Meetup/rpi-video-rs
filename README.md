@@ -36,3 +36,7 @@ make
 ```
 ./rpi_video.out
 ```
+
+
+rustup target add arm-unknown-linux-gnueabihf
+rustup target add armv7-unknown-linux-gnueabihf
