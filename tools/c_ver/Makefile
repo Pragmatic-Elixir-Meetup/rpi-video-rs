@@ -1,4 +1,4 @@
-CC=gcc
+CC=arm-linux-gnueabihf-gcc
 
 INCLUDE_DIR = /opt/vc/include
 LIB_DIR = /opt/vc/lib
