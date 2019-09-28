@@ -1,3 +1,5 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 pub struct VideoParam {
     width: u32,
     height: u32,
@@ -7,15 +9,24 @@ pub struct VideoParam {
     output_file_path: String,
 }
 
-impl VideoParam {
-    pub fn new() -> VideoParam {
-        VideoParam {
-            width: 0,
-            height: 0,
-            bit_rate: 0,
-            frame_rate: 0,
-            max_seconds: 0,
-            output_file_path: "Hello".to_string(),
+impl Default for VideoParam {
+    fn default() -> Self {
+        let time_now = SystemTime::now();
+        let mut rand_filename = time_now
+            .duration_since(UNIX_EPOCH)
+            .expect("SystemTime.duration_since")
+            .as_secs()
+            .to_string();
+
+        rand_filename.push_str(".h264");
+
+        Self {
+            width: 1920,
+            height: 1080,
+            bit_rate: 17000000,
+            frame_rate: 30,
+            max_seconds: 5,
+            output_file_path: rand_filename,
         }
     }
 }
