@@ -3,10 +3,10 @@ extern crate rpi_mmal_rs as mmal;
 use std::error;
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct VideoError {
     pub message: String,
-    mmal_status: mmal::MMAL_STATUS_T::Type,
+    pub mmal_status: mmal::MMAL_STATUS_T::Type,
 }
 
 impl fmt::Display for VideoError {

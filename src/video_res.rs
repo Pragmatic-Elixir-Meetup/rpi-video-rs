@@ -1,5 +1,3 @@
-use std::fs::File;
-
 pub struct VideoRes {
     pub output_file_path: String,
 }
