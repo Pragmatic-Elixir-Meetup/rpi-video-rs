@@ -5,7 +5,7 @@ use rpi_video_rs::recorder::Recorder;
 fn main() {
     println!("\nStart to record a new H264 video\n");
 
-    let recorder = Recorder::new(None);
+    let mut recorder = Recorder::new(None);
 
     match recorder.run() {
         Ok(res) =>

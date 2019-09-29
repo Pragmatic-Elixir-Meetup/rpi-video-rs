@@ -1,11 +1,12 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
+#[derive(Debug, Clone)]
 pub struct VideoParam {
-    width: u32,
-    height: u32,
-    bit_rate: u32,
-    frame_rate: i32,
-    max_seconds: u64,
+    pub width: u32,
+    pub height: u32,
+    pub bit_rate: u32,
+    pub frame_rate: i32,
+    pub max_seconds: u64,
     output_file_path: String,
 }
 

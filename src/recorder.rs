@@ -23,7 +23,7 @@ impl Recorder {
         }
 
         Recorder {
-            camera_com: CameraComponent::new(),
+            camera_com: CameraComponent::new(video_param.clone()),
             encoder_com: EncoderComponent::new(),
             encoder_conn: VideoConn::new(),
             video_param: video_param,
@@ -31,7 +31,7 @@ impl Recorder {
         }
     }
 
-    pub fn run(&self) -> Result<VideoRes, VideoError> {
+    pub fn run(&mut self) -> Result<VideoRes, VideoError> {
         if let Err(error) = self.init_camera_com() {
             return Err(error)
         }
@@ -44,18 +44,19 @@ impl Recorder {
             return Err(error)
         }
 
+
         Ok(VideoRes::new())
     }
 
-    fn init_camera_com(&self) -> Result<(), VideoError> {
+    fn init_camera_com(&mut self) -> Result<(), VideoError> {
         self.camera_com.init()
     }
 
-    fn init_encoder_com(&self) -> Result<(), VideoError> {
+    fn init_encoder_com(&mut self) -> Result<(), VideoError> {
         self.encoder_com.init()
     }
 
-    fn init_encoder_conn(&self) -> Result<(), VideoError> {
+    fn init_encoder_conn(&mut self) -> Result<(), VideoError> {
         self.encoder_conn.init(&self.encoder_com, &self.camera_com)
     }
 }
