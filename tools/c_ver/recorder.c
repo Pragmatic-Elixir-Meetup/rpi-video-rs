@@ -334,7 +334,6 @@ destroy_camera_component(VideoState* state)
    }
 }
 
-
 void
 destroy_encoder_component(VideoState* state)
 {

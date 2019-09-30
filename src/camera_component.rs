@@ -61,17 +61,17 @@ impl CameraComponent {
             self.destroy_component();
         }
 
-        let mut camera_ptr: *mut mmal::MMAL_COMPONENT_T = ptr::null_mut();
+        let mut com_ptr: *mut mmal::MMAL_COMPONENT_T = ptr::null_mut();
 
         unsafe {
             let status = mmal::mmal_component_create(
                 mmal::MMAL_COMPONENT_DEFAULT_CAMERA.as_ptr(),
-                &mut camera_ptr
+                &mut com_ptr
             );
 
             if status != mmal::MMAL_STATUS_T::MMAL_SUCCESS ||
-               camera_ptr.is_null() ||
-               (*camera_ptr).output_num == 0
+               com_ptr.is_null() ||
+               (*com_ptr).output_num == 0
             {
                 let err_message = "Failed to invoke `mmal_component_create`".to_string();
 
@@ -84,7 +84,7 @@ impl CameraComponent {
             }
         }
 
-        self.mmal_camera_com = camera_ptr;
+        self.mmal_camera_com = com_ptr;
         Ok(())
     }
 
@@ -219,6 +219,10 @@ impl CameraComponent {
             (*es).video.frame_rate.num = self.video_param.frame_rate;
             (*es).video.frame_rate.den = 1;
 
+            if (*port).buffer_num < 3 {
+                (*port).buffer_num = 3;
+            }
+
             let status = mmal::mmal_port_format_commit(port);
             if status != mmal::MMAL_STATUS_T::MMAL_SUCCESS {
                 let err_message = "Failed to invoke `mmal_port_format_commit`".to_string();
@@ -229,10 +233,6 @@ impl CameraComponent {
                 };
 
                 return Err(error);
-            }
-
-            if (*port).buffer_num < 3 {
-                (*port).buffer_num = 3;
             }
         }
 
