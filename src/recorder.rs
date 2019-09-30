@@ -24,7 +24,7 @@ impl Recorder {
 
         Recorder {
             camera_com: CameraComponent::new(video_param.clone()),
-            encoder_com: EncoderComponent::new(),
+            encoder_com: EncoderComponent::new(video_param.clone()),
             encoder_conn: VideoConn::new(),
             video_param: video_param,
             video_state: VideoState::new(),
