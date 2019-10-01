@@ -3,20 +3,21 @@ extern crate rpi_mmal_rs as mmal;
 use std::ptr;
 use crate::video_error::VideoError;
 use crate::video_input_port::VideoInputPort;
+use crate::video_output_port::VideoOutputPort;
 use crate::video_param::VideoParam;
 
 pub struct EncoderComponent {
     mmal_encoder_com: *mut mmal::MMAL_COMPONENT_T,
     mmal_encoder_pool: *mut mmal::MMAL_POOL_T,
-    video_param: VideoParam,
+    param: VideoParam,
 }
 
 impl EncoderComponent {
-    pub fn new(video_param: VideoParam) -> Self {
+    pub fn new(param: VideoParam) -> Self {
         EncoderComponent {
             mmal_encoder_com: ptr::null_mut(),
             mmal_encoder_pool: ptr::null_mut(),
-            video_param: video_param,
+            param: param,
         }
     }
 
@@ -189,7 +190,7 @@ impl EncoderComponent {
             mmal::mmal_format_copy(output_format, input_format);
 
             (*output_format).encoding = mmal::MMAL_ENCODING_H264;
-            (*output_format).bitrate = self.video_param.bit_rate;
+            (*output_format).bitrate = self.param.bit_rate;
 
             let min_buffer_size = (*output_port).buffer_size_min;
             let recommended_buffer_size = (*output_port).buffer_size_recommended;
@@ -239,9 +240,17 @@ impl Drop for EncoderComponent {
 }
 
 impl VideoInputPort for EncoderComponent {
-    fn raw_port(&self) -> *mut mmal::MMAL_PORT_T {
+    fn raw_input_port(&self) -> *mut mmal::MMAL_PORT_T {
         unsafe {
             *(*self.mmal_encoder_com).input.offset(0)
+        }
+    }
+}
+
+impl VideoOutputPort for EncoderComponent {
+    fn raw_output_port(&self) -> *mut mmal::MMAL_PORT_T {
+        unsafe {
+            *(*self.mmal_encoder_com).output.offset(0)
         }
     }
 }

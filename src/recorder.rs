@@ -10,24 +10,24 @@ pub struct Recorder {
     camera_com: CameraComponent,
     encoder_com: EncoderComponent,
     encoder_conn: VideoConn,
-    video_param: VideoParam,
-    video_state: VideoState,
+    param: VideoParam,
+    state: VideoState,
 }
 
 impl Recorder {
-    pub fn new(video_param_opt: Option<VideoParam>) -> Recorder {
-        let mut video_param = Default::default();
+    pub fn new(param_opt: Option<VideoParam>) -> Recorder {
+        let mut param = Default::default();
 
-        if let Some(value) = video_param_opt {
-            video_param = value;
+        if let Some(value) = param_opt {
+            param = value;
         }
 
         Recorder {
-            camera_com: CameraComponent::new(video_param.clone()),
-            encoder_com: EncoderComponent::new(video_param.clone()),
+            state: VideoState::new(param.clone()),
+            camera_com: CameraComponent::new(param.clone()),
+            encoder_com: EncoderComponent::new(param.clone()),
             encoder_conn: VideoConn::new(),
-            video_param: video_param,
-            video_state: VideoState::new(),
+            param: param,
         }
     }
 
@@ -41,6 +41,10 @@ impl Recorder {
         }
 
         if let Err(error) = self.init_encoder_conn() {
+            return Err(error)
+        }
+
+        if let Err(error) = self.init_state() {
             return Err(error)
         }
 
@@ -58,5 +62,9 @@ impl Recorder {
 
     fn init_encoder_conn(&mut self) -> Result<(), VideoError> {
         self.encoder_conn.init(&self.encoder_com, &self.camera_com)
+    }
+
+    fn init_state(&mut self) -> Result<(), VideoError> {
+        self.state.init()
     }
 }

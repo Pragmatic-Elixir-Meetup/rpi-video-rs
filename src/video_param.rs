@@ -7,7 +7,7 @@ pub struct VideoParam {
     pub bit_rate: u32,
     pub frame_rate: i32,
     pub max_seconds: u64,
-    output_file_path: String,
+    pub output_file_path: String,
 }
 
 impl Default for VideoParam {

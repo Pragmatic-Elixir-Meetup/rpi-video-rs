@@ -59,8 +59,8 @@ impl VideoConn {
 
             let status = mmal::mmal_connection_create(
                 &mut conn_ptr,
-                output_port.raw_port(),
-                input_port.raw_port(),
+                output_port.raw_output_port(),
+                input_port.raw_input_port(),
                 flags
             );
 
