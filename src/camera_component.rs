@@ -253,6 +253,11 @@ impl Drop for CameraComponent {
 }
 
 impl VideoOutputPort for CameraComponent {
+    fn raw_port(&self) -> *mut mmal::MMAL_PORT_T {
+        unsafe {
+            *(*self.mmal_camera_com).output.offset(MMAL_CAMERA_VIDEO_PORT)
+        }
+    }
 }
 
 unsafe extern "C" fn camera_callback(

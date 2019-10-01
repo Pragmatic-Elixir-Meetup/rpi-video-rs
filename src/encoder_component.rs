@@ -239,4 +239,9 @@ impl Drop for EncoderComponent {
 }
 
 impl VideoInputPort for EncoderComponent {
+    fn raw_port(&self) -> *mut mmal::MMAL_PORT_T {
+        unsafe {
+            *(*self.mmal_encoder_com).input.offset(0)
+        }
+    }
 }
