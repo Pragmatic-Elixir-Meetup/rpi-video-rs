@@ -12,14 +12,14 @@ const MMAL_CAMERA_CAPTURE_PORT: isize = 2;
 
 pub struct CameraComponent {
     mmal_camera_com: *mut mmal::MMAL_COMPONENT_T,
-    video_param: VideoParam,
+    param: VideoParam,
 }
 
 impl CameraComponent {
-    pub fn new(video_param: VideoParam) -> Self {
+    pub fn new(param: VideoParam) -> Self {
         CameraComponent {
             mmal_camera_com: ptr::null_mut(),
-            video_param: video_param,
+            param: param,
         }
     }
 
@@ -176,12 +176,12 @@ impl CameraComponent {
             config.hdr.id = mmal::MMAL_PARAMETER_CAMERA_CONFIG;
             config.hdr.size = mem::size_of::<mmal::MMAL_PARAMETER_CAMERA_CONFIG_T>() as u32;
 
-            config.max_stills_w = self.video_param.width;
-            config.max_stills_h = self.video_param.height;
+            config.max_stills_w = self.param.width;
+            config.max_stills_h = self.param.height;
             config.stills_yuv422 = 0;
             config.one_shot_stills = 0;
-            config.max_preview_video_w = self.video_param.width;
-            config.max_preview_video_h = self.video_param.height;
+            config.max_preview_video_w = self.param.width;
+            config.max_preview_video_h = self.param.height;
             config.num_preview_video_frames = 3;
             config.stills_capture_circular_buffer_height = 0;
             config.fast_preview_resume = 0;
@@ -210,13 +210,13 @@ impl CameraComponent {
                 panic!("`port.format.es` is NULL");
             }
 
-            (*es).video.width = self.video_param.width;
-            (*es).video.height = self.video_param.height;
+            (*es).video.width = self.param.width;
+            (*es).video.height = self.param.height;
             (*es).video.crop.x = 0;
             (*es).video.crop.y = 0;
-            (*es).video.crop.width = self.video_param.width as i32;
-            (*es).video.crop.height = self.video_param.height as i32;
-            (*es).video.frame_rate.num = self.video_param.frame_rate;
+            (*es).video.crop.width = self.param.width as i32;
+            (*es).video.crop.height = self.param.height as i32;
+            (*es).video.frame_rate.num = self.param.frame_rate;
             (*es).video.frame_rate.den = 1;
 
             if (*port).buffer_num < 3 {
@@ -253,7 +253,7 @@ impl Drop for CameraComponent {
 }
 
 impl VideoOutputPort for CameraComponent {
-    fn raw_port(&self) -> *mut mmal::MMAL_PORT_T {
+    fn raw_output_port(&self) -> *mut mmal::MMAL_PORT_T {
         unsafe {
             *(*self.mmal_camera_com).output.offset(MMAL_CAMERA_VIDEO_PORT)
         }
