@@ -1,4 +1,4 @@
-use std::ptr;
+use std::slice;
 use std::sync::mpsc;
 
 use rpi_mmal_rs as mmal;
@@ -55,6 +55,41 @@ impl OutputProcessor {
 
         Ok(())
     }
+
+    pub fn take_data<F>(&self, fun: F) -> Result<(), VideoError>
+        where F: Fn(&[u8]) -> Result<(), VideoError> {
+        self.validate_buffer_receiver();
+
+        loop {
+            let result = self.buffer_receiver.as_ref().unwrap().recv();
+
+            if let Err(error) = result {
+                let err_message = format!("Failed to invoke `recv`: {:?}", error);
+
+                let video_error = VideoError {
+                    message: err_message,
+                    mmal_status: mmal::MMAL_STATUS_T::MMAL_EINVAL,
+                };
+
+                return Err(video_error);
+            }
+
+            match result.unwrap() {
+                Some(output_buffer) => {
+                    fun(output_buffer.raw_data())?;
+                },
+                None => break,
+            }
+        }
+
+        Ok(())
+    }
+
+    fn validate_buffer_receiver(&self) {
+        if self.buffer_receiver.is_none() {
+            panic!("`buffer_receiver` is None");
+        }
+    }
 }
 
 unsafe extern "C" fn output_callback(
@@ -76,11 +111,16 @@ unsafe extern "C" fn output_callback(
     if buffer_len > 0 {
         mmal::mmal_buffer_header_mem_lock(mmal_buffer);
 
-        let output_buffer = OutputBuffer::new();
+        let buffer_slice = slice::from_raw_parts(
+            (*mmal_buffer).data.offset((*mmal_buffer).offset as isize),
+            buffer_len as usize
+        );
 
-        user_data.buffer_sender.send(Some(output_buffer));
+        let output_buffer = OutputBuffer::new(buffer_slice);
 
         mmal::mmal_buffer_header_mem_unlock(mmal_buffer);
+
+        user_data.buffer_sender.send(Some(output_buffer)).unwrap();
     }
 
     mmal::mmal_buffer_header_release(mmal_buffer);
