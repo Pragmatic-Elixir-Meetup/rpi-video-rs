@@ -1,10 +1,12 @@
-extern crate rpi_mmal_rs as mmal;
-
 use std::ptr;
+
+use rpi_mmal_rs as mmal;
+
 use crate::video_error::VideoError;
 use crate::video_input_port::VideoInputPort;
 use crate::video_output_port::VideoOutputPort;
 use crate::video_param::VideoParam;
+use crate::video_pool::VideoPool;
 
 pub struct EncoderComponent {
     mmal_encoder_com: *mut mmal::MMAL_COMPONENT_T,
@@ -252,5 +254,11 @@ impl VideoOutputPort for EncoderComponent {
         unsafe {
             *(*self.mmal_encoder_com).output.offset(0)
         }
+    }
+}
+
+impl VideoPool for EncoderComponent {
+    fn raw_pool(&self) -> *mut mmal::MMAL_POOL_T {
+        self.mmal_encoder_pool
     }
 }

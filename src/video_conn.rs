@@ -1,6 +1,7 @@
-extern crate rpi_mmal_rs as mmal;
-
 use std::ptr;
+
+use rpi_mmal_rs as mmal;
+
 use crate::video_error::VideoError;
 use crate::video_input_port::VideoInputPort;
 use crate::video_output_port::VideoOutputPort;

@@ -1,7 +1,7 @@
-extern crate rpi_mmal_rs as mmal;
-
 use std::error;
 use std::fmt;
+
+use rpi_mmal_rs as mmal;
 
 #[derive(Debug, Clone)]
 pub struct VideoError {
