@@ -1,5 +1,3 @@
-extern crate rpi_video_rs;
-
 use rpi_video_rs::recorder::Recorder;
 
 fn main() {

@@ -1,7 +1,8 @@
-extern crate rpi_mmal_rs as mmal;
-
 use std::mem;
 use std::ptr;
+
+use rpi_mmal_rs as mmal;
+
 use crate::video_error::VideoError;
 use crate::video_output_port::VideoOutputPort;
 use crate::video_param::VideoParam;
@@ -51,6 +52,27 @@ impl CameraComponent {
         if let Err(_) = result {
             self.destroy_component();
             return result;
+        }
+
+        Ok(())
+    }
+
+    pub fn enable_capture(&self) -> Result<(), VideoError> {
+        let capture_port = self.raw_output_port();
+
+        let status = unsafe {
+            mmal::mmal_port_parameter_set_boolean(capture_port, mmal::MMAL_PARAMETER_CAPTURE, 1)
+        };
+
+        if status != mmal::MMAL_STATUS_T::MMAL_SUCCESS {
+            let err_message = "Failed to invoke `mmal_port_parameter_set_boolean`".to_string();
+
+            let error = VideoError {
+                message: err_message,
+                mmal_status: status,
+            };
+
+            return Err(error);
         }
 
         Ok(())
@@ -125,7 +147,7 @@ impl CameraComponent {
         let status = unsafe {
             mmal::mmal_port_enable(
                 (*self.mmal_camera_com).control,
-                Some(camera_callback)
+                Some(control_callback)
             )
         };
 
@@ -260,9 +282,9 @@ impl VideoOutputPort for CameraComponent {
     }
 }
 
-unsafe extern "C" fn camera_callback(
-    _port: *mut mmal::MMAL_PORT_T,
-    buffer: *mut mmal::MMAL_BUFFER_HEADER_T
+unsafe extern "C" fn control_callback(
+    _mmal_port: *mut mmal::MMAL_PORT_T,
+    mmal_buffer: *mut mmal::MMAL_BUFFER_HEADER_T
 ) {
-    mmal::mmal_buffer_header_release(buffer);
+    mmal::mmal_buffer_header_release(mmal_buffer);
 }
