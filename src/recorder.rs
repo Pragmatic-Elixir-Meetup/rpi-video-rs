@@ -42,6 +42,7 @@ impl Recorder {
         self.init_output_processor()?;
         self.enable_capture()?;
 
+        self.write_output_data_to_file()?;
 
         let video_res = VideoRes {
             output_file_path: self.param.output_file_path.clone(),
@@ -72,5 +73,13 @@ impl Recorder {
 
     fn init_state(&mut self) -> Result<(), VideoError> {
         self.state.init()
+    }
+
+    fn write_output_data_to_file(&self) -> Result<(), VideoError> {
+        let write_file = |data: &[u8]| {
+            self.state.write_output_file(data)
+        };
+
+        self.output_processor.take_data(write_file)
     }
 }
