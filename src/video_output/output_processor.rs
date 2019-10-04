@@ -56,6 +56,10 @@ impl OutputProcessor {
         Ok(())
     }
 
+    pub fn disable(&mut self, output_port: &dyn VideoOutputPort) {
+        output_port.disable_output_port();
+    }
+
     pub fn take_data<F>(&self, fun: F) -> Result<(), VideoError>
         where F: Fn(&[u8]) -> Result<(), VideoError> {
         self.validate_buffer_receiver();
