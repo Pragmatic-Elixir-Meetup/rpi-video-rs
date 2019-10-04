@@ -54,6 +54,18 @@ impl EncoderComponent {
         Ok(())
     }
 
+    pub fn destroy(&mut self) {
+        self.destroy_all();
+    }
+
+    pub fn disable(&mut self) {
+        if !self.mmal_encoder_com.is_null() {
+            unsafe {
+                mmal::mmal_component_disable(self.mmal_encoder_com);
+            }
+        }
+    }
+
     pub fn send_queue_buffers(&self) -> Result<(), VideoError> {
         self.validate_pool();
 
@@ -299,6 +311,16 @@ impl VideoInputPort for EncoderComponent {
 }
 
 impl VideoOutputPort for EncoderComponent {
+    fn disable_output_port(&self) {
+        let mmal_port = self.raw_output_port();
+
+        unsafe {
+            if !mmal_port.is_null() && (*mmal_port).is_enabled != 0 {
+                mmal::mmal_port_disable(mmal_port);
+            }
+        }
+    }
+
     fn raw_output_port(&self) -> *mut mmal::MMAL_PORT_T {
         unsafe {
             *(*self.mmal_encoder_com).output.offset(0)

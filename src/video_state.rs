@@ -32,6 +32,12 @@ impl VideoState {
         sleep(seconds);
     }
 
+    pub fn sync_output_file(&self) {
+        if let Some(file_handle) = self.output_file.as_ref() {
+            file_handle.sync_all().unwrap();
+        }
+    }
+
     pub fn write_output_file(&self, buf: &[u8]) -> Result<(), VideoError> {
         self.validate_output_file_handle();
 

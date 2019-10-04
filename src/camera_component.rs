@@ -57,6 +57,18 @@ impl CameraComponent {
         Ok(())
     }
 
+    pub fn destroy(&mut self) {
+        self.destroy_component();
+    }
+
+    pub fn disable(&mut self) {
+        if !self.mmal_camera_com.is_null() {
+            unsafe {
+                mmal::mmal_component_disable(self.mmal_camera_com);
+            }
+        }
+    }
+
     pub fn enable_capture(&self) -> Result<(), VideoError> {
         let capture_port = self.raw_output_port();
 
@@ -207,7 +219,8 @@ impl CameraComponent {
             config.num_preview_video_frames = 3;
             config.stills_capture_circular_buffer_height = 0;
             config.fast_preview_resume = 0;
-            config.use_stc_timestamp = mmal::MMAL_PARAMETER_CAMERA_CONFIG_TIMESTAMP_MODE_T_MMAL_PARAM_TIMESTAMP_MODE_RESET_STC;
+            config.use_stc_timestamp =
+                mmal::MMAL_PARAMETER_CAMERA_CONFIG_TIMESTAMP_MODE_T_MMAL_PARAM_TIMESTAMP_MODE_RESET_STC;
 
             mmal::mmal_port_parameter_set((*self.mmal_camera_com).control, &mut config.hdr);
         }
@@ -275,6 +288,16 @@ impl Drop for CameraComponent {
 }
 
 impl VideoOutputPort for CameraComponent {
+    fn disable_output_port(&self) {
+        let mmal_port = self.raw_output_port();
+
+        unsafe {
+            if !mmal_port.is_null() && (*mmal_port).is_enabled != 0 {
+                mmal::mmal_port_disable(mmal_port);
+            }
+        }
+    }
+
     fn raw_output_port(&self) -> *mut mmal::MMAL_PORT_T {
         unsafe {
             *(*self.mmal_camera_com).output.offset(MMAL_CAMERA_VIDEO_PORT)

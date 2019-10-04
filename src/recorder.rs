@@ -35,17 +35,15 @@ impl Recorder {
     }
 
     pub fn run(&mut self) -> Result<VideoRes, VideoError> {
-        self.init_camera_com()?;
-        self.init_encoder_com()?;
-        self.init_encoder_conn()?;
-        self.init_state()?;
-        self.init_output_processor()?;
-        self.enable_capture()?;
-        self.send_queue_buffers()?;
+        self.init()?;
+        self.enable_output()?;
 
         self.wait();
 
-        self.write_output_data_to_file()?;
+        self.write_output()?;
+        self.disable_output();
+
+        self.destroy();
 
         let video_res = VideoRes {
             output_file_path: self.param.output_file_path.clone(),
@@ -54,39 +52,40 @@ impl Recorder {
         Ok(video_res)
     }
 
-    fn enable_capture(&self) -> Result<(), VideoError> {
-        self.camera_com.enable_capture()
+    fn destroy(&mut self) {
+        self.state.sync_output_file();
+
+        self.encoder_conn.destroy();
+
+        self.encoder_com.disable();
+        self.camera_com.disable();
+
+        self.encoder_com.destroy();
+        self.camera_com.destroy();
     }
 
-    fn init_camera_com(&mut self) -> Result<(), VideoError> {
-        self.camera_com.init()
+    fn disable_output(&mut self) {
+        self.output_processor.disable(&self.encoder_com);
     }
 
-    fn init_encoder_com(&mut self) -> Result<(), VideoError> {
-        self.encoder_com.init()
-    }
-
-    fn init_encoder_conn(&mut self) -> Result<(), VideoError> {
-        self.encoder_conn.init(&self.encoder_com, &self.camera_com)
-    }
-
-    fn init_output_processor(&mut self) -> Result<(), VideoError> {
-        self.output_processor.init(&self.encoder_com, &self.encoder_com)
-    }
-
-    fn init_state(&mut self) -> Result<(), VideoError> {
-        self.state.init()
-    }
-
-    fn send_queue_buffers(&self) -> Result<(), VideoError> {
+    fn enable_output(&mut self) -> Result<(), VideoError> {
+        self.output_processor.init(&self.encoder_com, &self.encoder_com)?;
+        self.camera_com.enable_capture()?;
         self.encoder_com.send_queue_buffers()
+    }
+
+    fn init(&mut self) -> Result<(), VideoError> {
+        self.camera_com.init()?;
+        self.encoder_com.init()?;
+        self.encoder_conn.init(&self.encoder_com, &self.camera_com)?;
+        self.state.init()
     }
 
     fn wait(&self) {
         self.state.wait();
     }
 
-    fn write_output_data_to_file(&self) -> Result<(), VideoError> {
+    fn write_output(&self) -> Result<(), VideoError> {
         let write_file = |data: &[u8]| {
             self.state.write_output_file(data)
         };

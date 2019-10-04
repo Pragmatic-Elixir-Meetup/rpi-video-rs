@@ -42,6 +42,10 @@ impl VideoConn {
         Ok(())
     }
 
+    pub fn destroy(&mut self) {
+        self.destroy_connection();
+    }
+
     fn create_connection(
         &mut self,
         input_port: &dyn VideoInputPort,
