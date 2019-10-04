@@ -41,6 +41,9 @@ impl Recorder {
         self.init_state()?;
         self.init_output_processor()?;
         self.enable_capture()?;
+        self.send_queue_buffers()?;
+
+        self.wait();
 
         self.write_output_data_to_file()?;
 
@@ -73,6 +76,14 @@ impl Recorder {
 
     fn init_state(&mut self) -> Result<(), VideoError> {
         self.state.init()
+    }
+
+    fn send_queue_buffers(&self) -> Result<(), VideoError> {
+        self.encoder_com.send_queue_buffers()
+    }
+
+    fn wait(&self) {
+        self.state.wait();
     }
 
     fn write_output_data_to_file(&self) -> Result<(), VideoError> {
