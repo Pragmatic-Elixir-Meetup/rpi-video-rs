@@ -1,6 +1,8 @@
 use std::fs::{OpenOptions, File};
 use std::io::Write;
 use std::path::Path;
+use std::thread::sleep;
+use std::time::Duration;
 
 use rpi_mmal_rs as mmal;
 
@@ -22,6 +24,12 @@ impl VideoState {
 
     pub fn init(&mut self) -> Result<(), VideoError> {
         self.create_output_file()
+    }
+
+    pub fn wait(&self) {
+        let seconds = Duration::new(self.param.max_seconds, 0);
+
+        sleep(seconds);
     }
 
     pub fn write_output_file(&self, buf: &[u8]) -> Result<(), VideoError> {

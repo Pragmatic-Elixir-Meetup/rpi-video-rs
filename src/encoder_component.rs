@@ -54,6 +54,49 @@ impl EncoderComponent {
         Ok(())
     }
 
+    pub fn send_queue_buffers(&self) -> Result<(), VideoError> {
+        self.validate_pool();
+
+        let mut result = Ok(());
+
+        unsafe {
+            let mmal_queue = (*self.mmal_encoder_pool).queue;
+            let queue_len = mmal::mmal_queue_length(mmal_queue);
+
+            for i in 0..queue_len {
+                let buffer = mmal::mmal_queue_get(mmal_queue);
+
+                if buffer.is_null() {
+                    let err_message = "Failed to invoke `mmal_queue_get`".to_string();
+
+                    let error = VideoError {
+                        message: err_message,
+                        mmal_status: mmal::MMAL_STATUS_T::MMAL_EINVAL,
+                    };
+
+                    result = Err(error);
+                    break;
+                }
+
+                let status = mmal::mmal_port_send_buffer(self.raw_output_port(), buffer);
+
+                if status != mmal::MMAL_STATUS_T::MMAL_SUCCESS {
+                    let err_message = "Failed to invoke `mmal_port_send_buffer`".to_string();
+
+                    let error = VideoError {
+                        message: err_message,
+                        mmal_status: status,
+                    };
+
+                    result = Err(error);
+                    break;
+                }
+            }
+        }
+
+        result
+    }
+
     fn create_component(&mut self) -> Result<(), VideoError> {
         if !(self.mmal_encoder_com.is_null() && self.mmal_encoder_pool.is_null()) {
             self.destroy_all();
@@ -231,6 +274,12 @@ impl EncoderComponent {
     fn validate_component(&self) {
         if self.mmal_encoder_com.is_null() {
             panic!("`mmal_encoder_com` is NULL");
+        }
+    }
+
+    fn validate_pool(&self) {
+        if self.mmal_encoder_pool.is_null() {
+            panic!("`mmal_encoder_pool` is NULL");
         }
     }
 }
