@@ -1,7 +1,7 @@
+extern crate rpi_mmal_rs as mmal;
+
 use std::slice;
 use std::sync::mpsc;
-
-use rpi_mmal_rs as mmal;
 
 use crate::video_error::VideoError;
 use crate::video_output::output_buffer::OutputBuffer;

@@ -1,4 +1,4 @@
-use rpi_mmal_rs as mmal;
+extern crate rpi_mmal_rs as mmal;
 
 pub trait VideoOutputPort {
     fn disable_output_port(&self);
