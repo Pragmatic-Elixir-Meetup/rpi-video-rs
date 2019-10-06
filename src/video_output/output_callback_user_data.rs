@@ -1,6 +1,6 @@
-use std::sync::mpsc;
+extern crate rpi_mmal_rs as mmal;
 
-use rpi_mmal_rs as mmal;
+use std::sync::mpsc;
 
 use crate::video_output::output_buffer::OutputBuffer;
 

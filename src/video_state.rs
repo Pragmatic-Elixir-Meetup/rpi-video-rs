@@ -1,10 +1,10 @@
+extern crate rpi_mmal_rs as mmal;
+
 use std::fs::{OpenOptions, File};
 use std::io::Write;
 use std::path::Path;
 use std::thread::sleep;
 use std::time::Duration;
-
-use rpi_mmal_rs as mmal;
 
 use crate::video_error::VideoError;
 use crate::video_param::VideoParam;
