@@ -25,7 +25,7 @@ impl OutputProcessor {
         output_port: &dyn VideoOutputPort,
         pool: &dyn VideoPool
     ) -> Result<(), VideoError> {
-        let (buffer_sender, buffer_receiver) = mpsc::sync_channel(0);
+        let (buffer_sender, buffer_receiver) = mpsc::channel();
         self.buffer_receiver = Some(buffer_receiver);
 
         let user_data = OutputCallbackUserData {
@@ -125,6 +125,9 @@ unsafe extern "C" fn output_callback(
         mmal::mmal_buffer_header_mem_unlock(mmal_buffer);
 
         user_data.buffer_sender.send(Some(output_buffer)).unwrap();
+    } else {
+        // Notifies the end of buffer frames (record complete).
+        user_data.buffer_sender.send(None).unwrap();
     }
 
     mmal::mmal_buffer_header_release(mmal_buffer);

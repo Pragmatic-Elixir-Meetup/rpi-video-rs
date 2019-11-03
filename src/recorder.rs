@@ -40,8 +40,8 @@ impl Recorder {
 
         self.wait();
 
-        self.write_output()?;
         self.disable_output();
+        self.write_output()?;
 
         self.destroy();
 

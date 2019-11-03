@@ -9,6 +9,10 @@ impl OutputBuffer {
         }
     }
 
+    pub fn len(&self) -> usize {
+        self.vec_data.len()
+    }
+
     pub fn raw_data(&self) -> &[u8] {
         self.vec_data.as_slice()
     }
