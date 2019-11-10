@@ -75,7 +75,7 @@ impl EncoderComponent {
             let mmal_queue = (*self.mmal_encoder_pool).queue;
             let queue_len = mmal::mmal_queue_length(mmal_queue);
 
-            for i in 0..queue_len {
+            for _i in 0..queue_len {
                 let buffer = mmal::mmal_queue_get(mmal_queue);
 
                 if buffer.is_null() {
