@@ -1,14 +1,14 @@
 [package]
 name = "rpi-video-rs"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Steven Gu <asongala@163.com>"]
 license = "MIT"
 description = "Rust version of H264 video record on Raspberry Pi"
-homepage = "https://github.com/silathdiir/rpi-video-rs"
-documentation = "https://github.com/silathdiir/rpi-video-rs"
-repository = "https://github.com/silathdiir/rpi-video-rs"
+homepage = "https://github.com/Pragmatic-Elixir-Meetup/rpi-video-rs"
+documentation = "https://github.com/Pragmatic-Elixir-Meetup/rpi-video-rs"
+repository = "https://github.com/Pragmatic-Elixir-Meetup/rpi-video-rs"
 edition = "2018"
 exclude = ["tools/*"]
 
 [dependencies]
-rpi-mmal-rs = "0.0.2"
+rpi-mmal-rs = "0.0.3"

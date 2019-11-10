@@ -2,7 +2,7 @@
 
 This project implements `H264` video record on Raspberry Pi. It uses the
 `rust-ffi` binding library
-[rpi-mmal-rs](https://github.com/silathdiir/rpi-mmal-rs).
+[rpi-mmal-rs](https://github.com/Pragmatic-Elixir-Meetup/rpi-mmal-rs).
 
 ## Usage
 
@@ -10,7 +10,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rpi-video-rs = "0.0.2"
+rpi-video-rs = "0.0.3"
 ```
 
 You could checkout the user code in folder `examples/`.
@@ -24,7 +24,7 @@ cargo run --example simple
 
 Since this project requires the real camera to record H264 videos, you needs a
 RPI to run or test. But you could also uses a cross-compiling environment for
-compiling and developing. We offers a Dockerfile (in folder `tools/docker/`)
+compiling and developing. We offer a Dockerfile (in folder `tools/docker/`)
 which is a separate cross-compiling environment.
 
 For developing on either a RPI device or a Docker container, you should install
